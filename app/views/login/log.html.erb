@@ -1,0 +1,20 @@
+
+<!-- show flash-->
+<% flash.each do |key, value| %>
+    <div class="flash <%= key %>"><%= value %></div>
+<% end %>
+
+<!-- log form ruby on rail -->
+<%= form_tag :controller => "login", :action => "login" do %>
+    <p>
+        <%= label_tag :username %><br />
+        <%= text_field_tag :username, params[:username] %>
+    </p>
+    <p>
+        <%= label_tag :password %><br />
+        <%= password_field_tag :password, params[:password] %>
+    </p>
+    <p class="button"><%= submit_tag "Log in" %> </p>
+<% end %>
+
+<%= link_to "Create an account", :controller => "create", :action => "index" %>

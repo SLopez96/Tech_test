@@ -1,0 +1,16 @@
+<!-- create a user-->
+<%= form_tag :controller => "create", :action => "create" do %>
+    <p>
+        <%= label_tag :username %><br />
+        <%= text_field_tag :username, params[:username] %>
+    </p>
+    <p>
+        <%= label_tag :password %><br />
+        <%= password_field_tag :password, params[:password] %>
+    </p>
+    <p>
+        <%= label_tag :password_confirmation %><br />
+        <%= password_field_tag :password_confirmation, params[:password_confirmation] %>
+    </p>
+    <p class="button"><%= submit_tag "Create" %> </p>
+<% end %>
