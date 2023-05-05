@@ -1,0 +1,22 @@
+<h1>Details</h1>
+<% if @details !=nil%>
+    <% @details.each do |element|%>
+        <p>
+        <% if element[0] != "url" %>
+            <%= element[0].gsub(/_/, ' ').capitalize %> : 
+        <% if element[1].is_a?(String) %> 
+            <%= sanitize element[1] %>
+        <% elsif element[1].is_a?(Integer)%>
+            <%= element[1] %>
+        <% elsif element[1].is_a?(Array)%>
+            <% element[1].each do |subelement| %>
+                <%= sanitize subelement %> , 
+            <% end %>
+        <% else %>
+            <%= sanitize element[1] %>
+        <% end %>
+        <% end %>
+        </p>
+    <% end %>
+<% end %>
+<a href="/logged/index"> Return</a>

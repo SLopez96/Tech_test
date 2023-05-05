@@ -1,3 +1,42 @@
-<h1>LOGGED</h1>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+<h1>Star Wars DB</h1>
 
 <%= link_to "Logout", :controller => 'logged', :action => 'logout' %>
+
+<h2>Type</h2>
+
+<!-- recup from controller ressources-->
+<% if @result!=nil%>
+    <% @result.each do |type| %>
+        <button class="afficher-liste" data-id="<%= type[0] %>"> <%= type[0] %></button>
+    <% end %>
+<% end %>
+
+<div id="liste-elements"></div>
+
+
+<script>
+$(document).on('click', '.afficher-liste', function() {
+  var elementId = $(this).data('id');
+  $.ajax({
+    url: 'https://swapi.dev/api/' + elementId,
+    type: 'GET',
+    dataType: 'json',
+    success: function(response) {
+      var listeElements = response.results;
+      var listeHtml = '<ul>';
+      for (var i = 0; i < listeElements.length; i++) {
+        if(elementId != 'films'){
+            var elementHtml = '<li><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].name + '</a></li>';
+        }else{
+            var elementHtml = '<li><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].title + '</a></li>';
+        }
+        listeHtml += elementHtml;
+      }
+      listeHtml += '</ul>';
+      $('#liste-elements').html(listeHtml);
+    }
+  });
+});
+</script>
