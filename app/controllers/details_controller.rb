@@ -1,6 +1,11 @@
 require 'faraday'
 class DetailsController < ApplicationController
   def index
+
+    if session[:user_id] == nil
+      redirect_to(:controller => 'login', :action => 'log')
+    end
+
     response = Faraday.get(params[:url])
     @details = JSON.parse(response.body)
 
@@ -19,7 +24,6 @@ class DetailsController < ApplicationController
         value.each_with_index do |content, index|
           
           if content.is_a?(String) && content.include?("https://swapi.dev/api/")
-            p content
             response = Faraday.get(content)
             if key != "films"
               @details[key][index] = '<a href="/details/index?url=' + content + '">' + JSON.parse(response.body)["name"] + '</a>' 
