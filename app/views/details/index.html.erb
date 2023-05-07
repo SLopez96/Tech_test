@@ -1,22 +1,43 @@
-<h1>Details</h1>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <div class="navbar-item">
+            <%= link_to "< Return", { :controller => 'logged', :action => 'index' }, class: 'button is-light' %>
+        </div>
+    </div>
+</nav>
+
 <% if @details !=nil%>
     <% @details.each do |element|%>
-        <p>
+    <div class="columns"><div class="column"></div> 
         <% if element[0] != "url" %>
-            <%= element[0].gsub(/_/, ' ').capitalize %> : 
-        <% if element[1].is_a?(String) %> 
-            <%= sanitize element[1] %>
-        <% elsif element[1].is_a?(Integer)%>
-            <%= element[1] %>
-        <% elsif element[1].is_a?(Array)%>
-            <% element[1].each do |subelement| %>
-                <%= sanitize subelement %> , 
+            <% if element != @details.first%>
+            <div class="column" style="text-align:right;">
+                <span class="is-size-5"><%= element[0].gsub(/_/, ' ').capitalize %> : </span> </div>
             <% end %>
-        <% else %>
-            <%= sanitize element[1] %>
+            
+            <% if element[1].is_a?(String) %> 
+                <% if element != @details.first %>
+                    <div class="column" ><span class="is-size-5" ><%= sanitize element[1] %></span>
+                <% else %>
+                    <div class="column" style="text-align:center;"><span class="is-size-2" ><%= sanitize element[1] %></span>
+                <% end %>
+            <% elsif element[1].is_a?(Integer)%>
+             <div class="column" ><span class="is-size-5"> <%= element[1] %></span>
+            <% elsif element[1].is_a?(Array)%>
+             <div class="column" >
+                <% element[1].each do |subelement| %>
+                    <% if subelement == element[1].last %>
+                        <span class="is-size-5"><%= sanitize subelement %></span>
+                    <% else %>
+                        <span class="is-size-5"><%= sanitize subelement %>, </span>
+                    <% end %>
+                <% end %>
+            <% else %>
+                <span class="is-size-5"><%= sanitize element[1] %></span>
+            <% end %>
         <% end %>
-        <% end %>
-        </p>
+        </div><div class="column"></div></div>
     <% end %>
 <% end %>
-<a href="/logged/index"> Return</a>
+
+

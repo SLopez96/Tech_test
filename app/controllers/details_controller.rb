@@ -1,4 +1,5 @@
 require 'faraday'
+require 'date'
 class DetailsController < ApplicationController
   def index
 
@@ -31,6 +32,13 @@ class DetailsController < ApplicationController
               @details[key][index] = '<a href="/details/index?url=' + content + '">' + JSON.parse(response.body)["title"] + '</a>'
             end
           end
+        end
+      else
+        begin
+          date = Date.parse(value)
+          datetime = DateTime.strptime(value, '%Y-%m-%d')
+          @details[key] = datetime.strftime('%d/%m/%Y')
+        rescue ArgumentError
         end
       end
     end
