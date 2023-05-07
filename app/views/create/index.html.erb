@@ -1,16 +1,38 @@
-<!-- create a user-->
-<%= form_tag :controller => "create", :action => "create" do %>
-    <p>
-        <%= label_tag :username %><br />
-        <%= text_field_tag :username, params[:username] %>
-    </p>
-    <p>
-        <%= label_tag :password %><br />
-        <%= password_field_tag :password, params[:password] %>
-    </p>
-    <p>
-        <%= label_tag :password_confirmation %><br />
-        <%= password_field_tag :password_confirmation, params[:password_confirmation] %>
-    </p>
-    <p class="button"><%= submit_tag "Create" %> </p>
-<% end %>
+<!DOCTYPE html>
+<html>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <%= form_tag :controller => "create", :action => "create" do %>
+                        <div class="field">
+                            <%= label_tag :username, "Username" %>
+                            <div class="control">
+                                <%= text_field_tag :username, params[:username], :class => "input" %>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <%= label_tag :password, "Password" %>
+                            <div class="control">
+                                <%= password_field_tag :password, params[:password], :class => "input" %>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <%= label_tag :password_confirmation, "Confirm Password" %>
+                            <div class="control">
+                                <%= password_field_tag :password_confirmation, params[:password_confirmation], :class => "input" %>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <%= submit_tag "Create", :class => "button is-primary" %>
+                            </div>
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

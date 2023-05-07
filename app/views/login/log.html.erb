@@ -1,20 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <!-- show flash-->
+                    <% flash.each do |key, value| %>
+                        <div class="notification <%= key %>"><%= value %></div>
+                    <% end %>
 
-<!-- show flash-->
-<% flash.each do |key, value| %>
-    <div class="flash <%= key %>"><%= value %></div>
-<% end %>
+                    <%= form_tag :controller => "login", :action => "login" do %>
+                        <div class="field">
+                            <%= label_tag :username, "Username" %>
+                            <div class="control">
+                                <%= text_field_tag :username, params[:username], :class => "input" %>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <%= label_tag :password, "Password" %>
+                            <div class="control">
+                                <%= password_field_tag :password, params[:password], :class => "input" %>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <%= submit_tag "Log in", :class => "button is-primary" %>
+                            </div>
+                        </div>
+                    <% end %>
 
-<!-- log form ruby on rail -->
-<%= form_tag :controller => "login", :action => "login" do %>
-    <p>
-        <%= label_tag :username %><br />
-        <%= text_field_tag :username, params[:username] %>
-    </p>
-    <p>
-        <%= label_tag :password %><br />
-        <%= password_field_tag :password, params[:password] %>
-    </p>
-    <p class="button"><%= submit_tag "Log in" %> </p>
-<% end %>
-
-<%= link_to "Create an account", :controller => "create", :action => "index" %>
+                    <%= link_to "Create an account", :controller => "create", :action => "index", :class => "button is-link" %>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
