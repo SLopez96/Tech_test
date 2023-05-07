@@ -8,6 +8,9 @@ class LoggedController < ApplicationController
     end
 
     def logout
+        if params[:type] != nil
+            @type = params[:type]
+        end
         session[:user_id] = nil
         redirect_to(:controller => 'login', :action => 'log')
     end
@@ -15,12 +18,6 @@ class LoggedController < ApplicationController
     def getTypeRessources
         response = Faraday.get('https://swapi.dev/api/')
         @result = JSON.parse(response.body)
-
-      #  if params[:type] == nil
-      #      response = Faraday.get('https://swapi.dev/api/'+@result[0])
-      #  else
-      #      response = Faraday.get('https://swapi.dev/api/'+params[:type])
-      #  end
 
     end
 
