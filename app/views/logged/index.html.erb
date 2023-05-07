@@ -1,61 +1,49 @@
+<head>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+</head>
 <header>
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="https://bulma.io">
-            <p class="is-size-2"> Star wars DB </p>
-        </a>
-    </div>
-    <div class="navbar-end">
-        <div class="navbar-item">
-               <p >Username: <%= @user.username %> </p>
+    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+        <div class="navbar-item" >
+            <p class="is-size-2 has-text-white">Star Wars DB</p>
+        </div>
         
-        </div>
-        <div class="navbar-item">
-            <%= link_to "Logout", { :controller => 'logged', :action => 'logout' }, class: 'button is-light' %>
-        </div>
-    </div>
-    </div>
-</nav>
-
-</header>
-<body>
-
-<p class="is-size-3 ml-4 content">Browse data by type or search</p>
-<div class="columns is-gapless is-vcentered mt-4 mx-4">
-    <% if @result!=nil%>
-        <% @result.each do |type| %>
-            <div class="column">
-            <a class="button showData " style="min-width: 100px;" data-id="<%= type[0] %>"> <%= type[0] %></a>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <p class="is-size-5 has-text-white">Username: <%= @user.username %> </p>
             </div>
+            <div class="navbar-item">
+                <%= link_to "Logout", { :controller => 'logged', :action => 'logout' }, class: 'button is-primary' %>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<body>
+    <p class="is-size-3 ml-4 content">Browse data by type or search</p>
+    <div class="columns  is-vcentered mt-4 mx-4">
+        <% if @result!=nil%>
+            <% @result.each do |type| %>
+                <div class="column">
+                    <a class="button is-outlined is-primary showData" style="min-width: 100px;" data-id="<%= type[0] %>"><%= type[0] %></a>
+                </div>
+            <% end %>
         <% end %>
-    <% end %>
-    <div class="column">
-        <input class type="text" id="search" onkeyup="search()" placeholder="Search for names.." disabled>
+        <div class="column">
+            <input class="input is-primary" type="text" id="search" onkeyup="search()" placeholder="Search for names.." disabled>
+        </div>
     </div>
-</div>
-
-
-
-
-<div class="content has-text-centered " id="liste-elements"></div>
-
+  <div class="content has-text-centered" id="liste-elements"></div>
 </body>
 
 
 <script>
     $(document).on('click', '.showData', function() {
-
-        // add is-selected class to the button
-        $(this).addClass("is-dark");
-
-        // remove is-selected class from other buttons
-        $('.showData').not(this).removeClass("is-dark");
+        $(this).removeClass("is-outlined");
+        $('.showData').not(this).addClass("is-outlined");
         getDataByType.call(this);
     });
 
     $(document).on('click', '.change-list', function() {
-        
         getDataByType.call(this);
     });
 
@@ -71,7 +59,7 @@
                 listeHtml += '<ul class="mx-0 my-0" style="list-style: none">';
                 for (var i = 0; i < listeElements.length; i++) {
                     if(elementId != 'films'){
-                        var elementHtml = '<li><div class="card" style=" witdh: 100px;" ><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].name + '</div></a></li>';
+                        var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].name + '</div></a></li>';
                     }else{
                         var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].title + '</div></a></li>';
                     }
@@ -97,8 +85,6 @@
     }
 
     function search(){
-        //type = document.getElementById("type").value;
-        //get type from button with is-dark class
         type = $('.is-dark').data('id');
         if(document.getElementById("search").value.length > 0){
         url = "https://swapi.dev/api/"+type+"/?search="+document.getElementById("search").value;
@@ -108,16 +94,19 @@
             dataType: 'json',
             success: function(response) {
                 var listeElements = response.results;
-                var listeHtml = '<ul>';
+                var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
+                listeHtml += '<ul class="mx-0 my-0" style="list-style: none" >';
                 for (var i = 0; i < listeElements.length; i++) {
                     if(type != 'films'){
-                        var elementHtml = '<li><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].name + '</a></li>';
+                        var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].name + '</div></a></li>';
                     }else{
-                        var elementHtml = '<li><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].title + '</a></li>';
+                        var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].title + '</div></a></li>';
                     }
                     listeHtml += elementHtml;
                 }
-                listeHtml += '</ul>';
+                listeHtml += '</ul></div>';
+                listeHtml += '<div class="column"></div></div>';
+                listeHtml += '<div class="columns"><div class="column"></div><div class="column">';
                 const regex = /\/(\w+\/\?\w+=\d+)/;
                 if(response.previous != null){
                     const match = response.previous.match(regex);
@@ -131,7 +120,7 @@
             }
         });
         }else{
-            //trigger click on button with is-dark class
+            //trigger click on selected button when search is empty
             $('.is-dark').trigger('click');
         }
     }
