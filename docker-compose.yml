@@ -19,7 +19,6 @@ services:
     command: tail -f /dev/null
     volumes:
       - db_data:/data/db
-    volumes:
       - .:/app
 
 volumes:
