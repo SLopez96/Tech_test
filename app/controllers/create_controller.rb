@@ -3,10 +3,7 @@ class CreateController < ApplicationController
   end
 
   def create
-    @user = User.new
-    @user.username = params[:username]
-    @user.password = params[:password]
-    @user.save
+    User.create(username: params[:username], password: params[:password])
     redirect_to :controller => 'login', :action => 'log'
   end
 end
