@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: bundle exec rails server -p 3000 -b '0.0.0.0'
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: sqlite3:///app/db/development.sqlite3
+  db:
+    image: alpine
+    command: tail -f /dev/null
+    volumes:
+      - db_data:/data/db
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:
