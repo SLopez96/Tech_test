@@ -6,8 +6,9 @@ class DetailsController < ApplicationController
     if session[:user_id] == nil
       redirect_to(:controller => 'login', :action => 'log')
     end
+    base_url = "https://swapi.dev/api/"
 
-    response = Faraday.get(params[:url])
+    response = Faraday.get(base_url+params[:type]+"/"+params[:id].to_s+"/")
     @details = JSON.parse(response.body)
 
     @details.each do |key, value|
@@ -26,14 +27,18 @@ class DetailsController < ApplicationController
           
           if content.is_a?(String) && content.include?("https://swapi.dev/api/")
             response = Faraday.get(content)
-            if key != "films"
-              @details[key][index] = '<a href="/details/index?url=' + content + '">' + JSON.parse(response.body)["name"] + '</a>' 
-            else
-              @details[key][index] = '<a href="/details/index?url=' + content + '">' + JSON.parse(response.body)["title"] + '</a>'
+            regex = %r{https://swapi\.dev/api/(\w+)/(\d+)/}
+            matches = content.match(regex)
+            if matches
+              if key != "films"
+                @details[key][index] = '<a href="/details/index?type=' + matches[1] + '&id='+matches[2]+'">' + JSON.parse(response.body)["name"] + '</a>' 
+              else
+                @details[key][index] = '<a href="/details/index?type=' + matches[1] + '&id='+matches[2]+'">' + JSON.parse(response.body)["title"] + '</a>'
+              end
             end
           end
         end
-      else
+      elsif value.is_a?(String)
         begin
           date = Date.parse(value)
           datetime = DateTime.strptime(value, '%Y-%m-%d')

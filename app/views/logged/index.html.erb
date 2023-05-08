@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html>
 <head>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 </head>
@@ -15,6 +17,7 @@
                 <%= link_to "Logout", { :controller => 'logged', :action => 'logout' }, class: 'button is-primary' %>
             </div>
         </div>
+        <%= content_tag :div, '', id: 'mycontainer', data: { source: @result } %>
     </nav>
 </header>
 
@@ -29,7 +32,7 @@
             <% end %>
         <% end %>
         <div class="column">
-            <input class="input is-primary" type="text" id="search" onkeyup="search()" placeholder="Search for names.." disabled>
+            <input class="input is-primary" type="text" id="search" onkeyup="search()" placeholder="Search for names..">
         </div>
     </div>
   <div class="content has-text-centered" id="liste-elements"></div>
@@ -58,10 +61,12 @@
                 var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
                 listeHtml += '<ul class="mx-0 my-0" style="list-style: none">';
                 for (var i = 0; i < listeElements.length; i++) {
+                    const regex = /https:\/\/swapi\.dev\/api\/(\w+)\/(\d+)\//;
+                    const match = listeElements[i].url.match(regex);
                     if(elementId != 'films'){
-                        var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].name + '</div></a></li>';
+                        var elementHtml = '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[i].name + '</div></a></li>';
                     }else{
-                        var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].title + '</div></a></li>';
+                        var elementHtml = '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[i].title + '</div></a></li>';
                     }
                     listeHtml += elementHtml;
                 }
@@ -78,50 +83,51 @@
                     listeHtml += '<button class="button change-list" data-id="' +  match[1] + '">Next page</button>';
                 }
                 listeHtml += '</div><div class="column"></div></div>';
-                document.getElementById("search").disabled = false;
                 $('#liste-elements').html(listeHtml);
             }
         });
     }
 
     function search(){
-        type = $('.is-dark').data('id');
-        if(document.getElementById("search").value.length > 0){
-        url = "https://swapi.dev/api/"+type+"/?search="+document.getElementById("search").value;
-        $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                var listeElements = response.results;
-                var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
-                listeHtml += '<ul class="mx-0 my-0" style="list-style: none" >';
-                for (var i = 0; i < listeElements.length; i++) {
-                    if(type != 'films'){
-                        var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].name + '</div></a></li>';
-                    }else{
-                        var elementHtml = '<li><div class="card"><a href="/details/index?url=' + listeElements[i].url+ '">' + listeElements[i].title + '</div></a></li>';
+        types = $('#mycontainer').data('source');
+        var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
+        listeHtml += '<ul class="mx-0 my-0" style="list-style: none" >';
+        if (document.getElementById("search").value.length > 0) {
+            var promises = [];
+            for (var i = 0; i < Object.keys(types).length; i++) {
+                var type = Object.keys(types)[i];
+                var url = "https://swapi.dev/api/" + type + "/?search=" + document.getElementById("search").value;
+                var promise = $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json'
+                });
+                promises.push(promise);
+            }
+            Promise.all(promises).then(function (responses) {
+                for (var i = 0; i < responses.length; i++) {
+                    var response = responses[i];
+                    var listeElements = response.results;
+                    var type = Object.keys(types)[i];
+                    for (var j = 0; j < listeElements.length; j++) {
+                        const regex = /https:\/\/swapi\.dev\/api\/(\w+)\/(\d+)\//;
+                        const match = listeElements[j].url.match(regex);
+                        if (type != 'films') {
+                            listeHtml += '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[j].name + '</div></a></li>';
+                        } else {
+                            listeHtml += '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[j].title + '</div></a></li>';
+                        }
                     }
-                    listeHtml += elementHtml;
                 }
                 listeHtml += '</ul></div>';
                 listeHtml += '<div class="column"></div></div>';
-                listeHtml += '<div class="columns"><div class="column"></div><div class="column">';
-                const regex = /\/(\w+\/\?\w+=\d+)/;
-                if(response.previous != null){
-                    const match = response.previous.match(regex);
-                    listeHtml += '<button class="change-list" data-id="' +  match[1] + '">Previous</button>';
-                }
-                if(response.next != null){
-                    const match = response.next.match(regex);
-                    listeHtml += '<button class="change-list" data-id="' +  match[1] + '">Next</button>';
-                }
                 $('#liste-elements').html(listeHtml);
-            }
-        });
-        }else{
+            });
+        } else {
             //trigger click on selected button when search is empty
             $('.is-dark').trigger('click');
         }
+
     }
 </script>
+</html>
