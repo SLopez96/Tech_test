@@ -1,133 +1,129 @@
 <!DOCTYPE html>
 <html>
-<head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-</head>
-<header>
-    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
-        <div class="navbar-item" >
-            <p class="is-size-2 has-text-white">Star Wars DB</p>
-        </div>
-        
-        <div class="navbar-end">
-            <div class="navbar-item">
-                <p class="is-size-5 has-text-white">Username: <%= @user.username %> </p>
+    <header>
+        <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+            <div class="navbar-item" >
+                <p class="is-size-2 has-text-white">Star Wars DB</p>
             </div>
-            <div class="navbar-item">
-                <%= link_to "Logout", { :controller => 'logged', :action => 'logout' }, class: 'button is-primary' %>
-            </div>
-        </div>
-        <%= content_tag :div, '', id: 'mycontainer', data: { source: @result } %>
-    </nav>
-</header>
-
-<body>
-    <p class="is-size-3 ml-4 content">Browse data by type or search</p>
-    <div class="columns  is-vcentered mt-4 mx-4">
-        <% if @result!=nil%>
-            <% @result.each do |type| %>
-                <div class="column">
-                    <a class="button is-outlined is-primary showData" style="min-width: 100px;" data-id="<%= type[0] %>"><%= type[0] %></a>
+            
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <p class="is-size-5 has-text-white">Username: <%= @user.username %> </p>
                 </div>
+                <div class="navbar-item">
+                    <%= link_to "Logout", { :controller => 'logged', :action => 'logout' }, class: 'button is-primary' %>
+                </div>
+            </div>
+            <%= content_tag :div, '', id: 'mycontainer', data: { source: @result } %>
+        </nav>
+    </header>
+
+    <body>
+        <p class="is-size-3 ml-4 content">Browse data by type or search</p>
+        <div class="columns  is-vcentered mt-4 mx-4">
+            <% if @result!=nil%>
+                <% @result.each do |type| %>
+                    <div class="column">
+                        <a class="button is-outlined is-primary showData" style="min-width: 100px;" data-id="<%= type[0] %>"><%= type[0] %></a>
+                    </div>
+                <% end %>
             <% end %>
-        <% end %>
-        <div class="column">
-            <input class="input is-primary" type="text" id="search" onkeyup="search()" placeholder="Search for names..">
+            <div class="column">
+                <input class="input is-primary" type="text" id="search" onkeyup="search()" placeholder="Search for names..">
+            </div>
         </div>
-    </div>
-  <div class="content has-text-centered" id="liste-elements"></div>
-</body>
+        <div class="content has-text-centered" id="liste-elements"></div>
+    </body>
 
 
-<script>
-    $(document).on('click', '.showData', function() {
-        $(this).removeClass("is-outlined");
-        $('.showData').not(this).addClass("is-outlined");
-        getDataByType.call(this);
-    });
-
-    $(document).on('click', '.change-list', function() {
-        getDataByType.call(this);
-    });
-
-    function getDataByType(){
-        var elementId = $(this).data('id');
-        $.ajax({
-            url: 'https://swapi.dev/api/' + elementId,
-            type: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                var listeElements = response.results;
-                var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
-                listeHtml += '<ul class="mx-0 my-0" style="list-style: none">';
-                for (var i = 0; i < listeElements.length; i++) {
-                    const regex = /https:\/\/swapi\.dev\/api\/(\w+)\/(\d+)\//;
-                    const match = listeElements[i].url.match(regex);
-                    if(elementId != 'films'){
-                        var elementHtml = '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[i].name + '</div></a></li>';
-                    }else{
-                        var elementHtml = '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[i].title + '</div></a></li>';
-                    }
-                    listeHtml += elementHtml;
-                }
-                listeHtml += '</ul></div>';
-                listeHtml += '<div class="column"></div></div>';
-                listeHtml += '<div class="columns"><div class="column"></div><div class="column">';
-                const regex = /\/(\w+\/\?\w+=\d+)/;
-                if(response.previous != null){
-                    const match = response.previous.match(regex);
-                    listeHtml += '<button class="button change-list " data-id="' +  match[1] + '">Previous page</button>';
-                }
-                if(response.next != null){
-                    const match = response.next.match(regex);
-                    listeHtml += '<button class="button change-list" data-id="' +  match[1] + '">Next page</button>';
-                }
-                listeHtml += '</div><div class="column"></div></div>';
-                $('#liste-elements').html(listeHtml);
-            }
+    <script>
+        $(document).on('click', '.showData', function () {
+            $(this).removeClass("is-outlined");
+            $('.showData').not(this).addClass("is-outlined");
+            getDataByType.call(this);
         });
-    }
 
-    function search(){
-        types = $('#mycontainer').data('source');
-        var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
-        listeHtml += '<ul class="mx-0 my-0" style="list-style: none" >';
-        if (document.getElementById("search").value.length > 0) {
-            var promises = [];
-            for (var i = 0; i < Object.keys(types).length; i++) {
-                var type = Object.keys(types)[i];
-                var url = "https://swapi.dev/api/" + type + "/?search=" + document.getElementById("search").value;
-                var promise = $.ajax({
-                    url: url,
-                    type: 'GET',
-                    dataType: 'json'
-                });
-                promises.push(promise);
-            }
-            Promise.all(promises).then(function (responses) {
-                for (var i = 0; i < responses.length; i++) {
-                    var response = responses[i];
+        $(document).on('click', '.change-list', function () {
+            getDataByType.call(this);
+        });
+
+        function getDataByType() {
+            var elementId = $(this).data('id');
+            $.ajax({
+                url: 'https://swapi.dev/api/' + elementId,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
                     var listeElements = response.results;
-                    var type = Object.keys(types)[i];
-                    for (var j = 0; j < listeElements.length; j++) {
+                    var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
+                    listeHtml += '<ul class="mx-0 my-0" style="list-style: none">';
+                    for (var i = 0; i < listeElements.length; i++) {
                         const regex = /https:\/\/swapi\.dev\/api\/(\w+)\/(\d+)\//;
-                        const match = listeElements[j].url.match(regex);
-                        if (type != 'films') {
-                            listeHtml += '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[j].name + '</div></a></li>';
+                        const match = listeElements[i].url.match(regex);
+                        if (elementId != 'films') {
+                            var elementHtml = '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id=' + match[2] + '">' + listeElements[i].name + '</div></a></li>';
                         } else {
-                            listeHtml += '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id='+match[2]+'">' + listeElements[j].title + '</div></a></li>';
+                            var elementHtml = '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id=' + match[2] + '">' + listeElements[i].title + '</div></a></li>';
                         }
+                        listeHtml += elementHtml;
                     }
+                    listeHtml += '</ul></div>';
+                    listeHtml += '<div class="column"></div></div>';
+                    listeHtml += '<div class="columns"><div class="column"></div><div class="column">';
+                    const regex = /\/(\w+\/\?\w+=\d+)/;
+                    if (response.previous != null) {
+                        const match = response.previous.match(regex);
+                        listeHtml += '<button class="button change-list " data-id="' + match[1] + '">Previous page</button>';
+                    }
+                    if (response.next != null) {
+                        const match = response.next.match(regex);
+                        listeHtml += '<button class="button change-list" data-id="' + match[1] + '">Next page</button>';
+                    }
+                    listeHtml += '</div><div class="column"></div></div>';
+                    $('#liste-elements').html(listeHtml);
                 }
-                listeHtml += '</ul></div>';
-                listeHtml += '<div class="column"></div></div>';
-                $('#liste-elements').html(listeHtml);
             });
-        } else {
-            //trigger click on selected button when search is empty
-            $('.is-dark').trigger('click');
         }
 
-    }
-</script>
+        function search() {
+            types = $('#mycontainer').data('source');
+            var listeHtml = '<div class="columns"><div class="column"></div><div class="column is-one-quarter">';
+            listeHtml += '<ul class="mx-0 my-0" style="list-style: none" >';
+            if (document.getElementById("search").value.length > 0) {
+                var promises = [];
+                for (var i = 0; i < Object.keys(types).length; i++) {
+                    var type = Object.keys(types)[i];
+                    var url = "https://swapi.dev/api/" + type + "/?search=" + document.getElementById("search").value;
+                    var promise = $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json'
+                    });
+                    promises.push(promise);
+                }
+                Promise.all(promises).then(function (responses) {
+                    for (var i = 0; i < responses.length; i++) {
+                        var response = responses[i];
+                        var listeElements = response.results;
+                        var type = Object.keys(types)[i];
+                        for (var j = 0; j < listeElements.length; j++) {
+                            const regex = /https:\/\/swapi\.dev\/api\/(\w+)\/(\d+)\//;
+                            const match = listeElements[j].url.match(regex);
+                            if (type != 'films') {
+                                listeHtml += '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id=' + match[2] + '">' + listeElements[j].name + '</div></a></li>';
+                            } else {
+                                listeHtml += '<li><div class="card"><a href="/details/index?type=' + match[1] + '&id=' + match[2] + '">' + listeElements[j].title + '</div></a></li>';
+                            }
+                        }
+                    }
+                    listeHtml += '</ul></div>';
+                    listeHtml += '<div class="column"></div></div>';
+                    $('#liste-elements').html(listeHtml);
+                });
+            } else {
+                //trigger click on selected button when search is empty
+                $('.is-dark').trigger('click');
+            }
+        }
+    </script>
 </html>

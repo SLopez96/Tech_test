@@ -1,46 +1,44 @@
 <!DOCTYPE html>
 <html>
-<header>
-    <nav class="navbar is-link" role="navigation" aria-label="main navigation">
-        <div class="navbar-item" >
-            <p class="is-size-2 has-text-white">Star Wars DB</p>
-        </div>
-    </nav>
-</header>
-<body>
-    <section class="section">
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-half">
-                    <!-- show flash-->
-                    <% flash.each do |key, value| %>
-                        <div class="notification <%= key %>"><%= value %></div>
-                    <% end %>
-
-                    <%= form_tag :controller => "login", :action => "login" do %>
-                        <div class="field">
-                            <%= label_tag :username, "Username" %>
-                            <div class="control">
-                                <%= text_field_tag :username, params[:username], :class => "input" %>
+    <header>
+        <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+            <div class="navbar-item" >
+                <p class="is-size-2 has-text-white">Star Wars DB</p>
+            </div>
+        </nav>
+    </header>
+    <body>
+        <section class="section">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-half">
+                        <!-- show flash-->
+                        <% flash.each do |key, value| %>
+                            <div class="notification <%= key %>"><%= value %></div>
+                        <% end %>
+                        <%= form_tag :controller => "login", :action => "login" do %>
+                            <div class="field">
+                                <%= label_tag :username, "Username" %>
+                                <div class="control">
+                                    <%= text_field_tag :username, params[:username], :class => "input" %>
+                                </div>
                             </div>
-                        </div>
-                        <div class="field">
-                            <%= label_tag :password, "Password" %>
-                            <div class="control">
-                                <%= password_field_tag :password, params[:password], :class => "input" %>
+                            <div class="field">
+                                <%= label_tag :password, "Password" %>
+                                <div class="control">
+                                    <%= password_field_tag :password, params[:password], :class => "input" %>
+                                </div>
                             </div>
-                        </div>
-                        <div class="field">
-                            <div class="control">
-                                <%= submit_tag "Log in", :class => "button is-primary" %>
+                            <div class="field">
+                                <div class="control">
+                                    <%= submit_tag "Log in", :class => "button is-primary" %>
+                                </div>
                             </div>
-                        </div>
-                    <% end %>
-
-                    <%= link_to "Create an account", :controller => "create", :action => "index", :class => "button is-link" %>
+                        <% end %>
+                        <%= link_to "Create an account", :controller => "create", :action => "index", :class => "button is-link" %>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-</body>
+        </section>
+    </body>
 </html>
